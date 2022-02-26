@@ -1,6 +1,17 @@
-function search(inid, outid) {
+const params = new URLSearchParams(window.location.search);
+
+if (params.get("q")) {
+	search("invalid", "searchres", params.get("q"));
+}
+
+function search(inid, outid, override) {
 	console.log("searching!");
-	let input = document.getElementById(inid).value;
+	let input;
+	if (inid == "invalid") {
+		input = override;
+	} else {
+		input = document.getElementById(inid).value;
+	}
 	let output = document.getElementById(outid);
 	if (document.getElementById("searchdiv")) {
 		document.getElementById("searchdiv").remove();
@@ -8,7 +19,9 @@ function search(inid, outid) {
 	if (document.getElementById("top-search").style.display == "none") {
 		document.getElementById("top-search").style.display = "block";
 	}
-	fetch("/api/search?q=" + input)
+
+	let qq = input.replace(/ /g, "+");
+	fetch("/api/search?q=" + qq)
 		.then((response) => response.json())
 		.then((data) => {
 			console.log(data);
@@ -36,6 +49,35 @@ function search(inid, outid) {
 		});
 }
 
+function popular(outid) {
+	console.log("searching!");
+	let output = document.getElementById(outid);
+	if (document.getElementById("searchdiv")) {
+		document.getElementById("searchdiv").remove();
+	}
+	if (document.getElementById("top-search").style.display == "none") {
+		document.getElementById("top-search").style.display = "block";
+	}
+	fetch("/api/popular")
+		.then((response) => response.json())
+		.then((data) => {
+			console.log(data);
+			output.innerHTML = "";
+			data.forEach((item) => {
+				let div = document.createElement("div");
+				let truetitle = item.rawTitle.split("Episode")[0];
+				div.innerHTML = `
+                <div>
+                <h3><a href=".?q=${truetitle}">${item.rawTitle}</a></h3>
+                </div>
+                `;
+				div.setAttribute("onclick", "");
+				output.appendChild(div);
+				let genres = item.genres;
+			});
+		});
+}
+
 var input = document.getElementById("input");
 
 input.addEventListener("keyup", function (event) {
@@ -46,13 +88,14 @@ input.addEventListener("keyup", function (event) {
 });
 
 var input2 = document.getElementById("input2");
-
-input2.addEventListener("keyup", function (event) {
-	if (event.keyCode === 13) {
-		event.preventDefault();
-		document.getElementById("submitbtn2").click();
-	}
-});
+if (input2) {
+	input2.addEventListener("keyup", function (event) {
+		if (event.keyCode === 13) {
+			event.preventDefault();
+			document.getElementById("submitbtn2").click();
+		}
+	});
+}
 
 function toUpper(str) {
 	return str

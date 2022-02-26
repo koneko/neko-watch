@@ -2,10 +2,13 @@ const express = require("express");
 const app = express();
 const port = process.env.PORT || 3000;
 const scraper = require("./scraper");
+const fs = require("fs");
 app.use(express.static("public"));
 
 const api = require("anime-vostfr");
 const cloudscraper = require("cloudscraper");
+const e = require("express");
+const req = require("express/lib/request");
 
 app.get("/api/search", async (req, res) => {
 	const query = req.query.q;
@@ -14,19 +17,34 @@ app.get("/api/search", async (req, res) => {
 });
 
 app.get("/api/popular", async (req, res) => {
-	let data = await api.loadAnime();
-	let popular = api.popularAnime(data);
-	res.json(popular);
+	const query = req.query.q;
+	let raw = await scraper.newEpisodes(query);
+	res.json(raw);
 });
 
 app.get("/anime", (req, res) => {
 	res.redirect("/");
 });
 
+app.get("/api/image", async (req, res) => {
+	res.send(await scraper.getImage(req.query.q));
+});
+
+app.get("/api/video", async (req, res) => {
+	res.json(await scraper.getVideo(req.query.q));
+});
+
+app.get("/api/episodes", async (req, res) => {
+	const query = req.query.q;
+	let raw = await scraper.get(query);
+	res.json(raw);
+});
+
 app.get("/anime/:title", async (req, res) => {
 	const title = req.params.title;
 	let data = await scraper.get(title);
-	// synopsis = information.synop
+	let truetitle = toUpper(data.title.replace(/-/g, ""));
+	let image = await scraper.getImage(req.params.title);
 	res.send(`
     <html lang="en">
 	<head>
@@ -44,7 +62,7 @@ app.get("/anime/:title", async (req, res) => {
 			href="https://hub.koneko.link/cdn/icons/blue.png"
 			type="image/x-icon"
 		/>
-		<title>neko watch | ${anime.title}</title>
+		<title>neko watch | ${data.title}</title>
 	</head>
     <body>
     <div class="header">
@@ -61,25 +79,30 @@ app.get("/anime/:title", async (req, res) => {
     <div class="content">
     <div class="anime-info">
         <div class="anime-info-left">
-            <img src="${anime.url_image}" alt="${anime.title}" />
+            <img referrerpolicy="no-referrer" src="https://animedao.to${image}" style="height:450px;"/>
         </div>
         <div class="anime-info-right">
-            <h1>${anime.title}</h1>
-            <h2>Type: ${anime.type}</h2>
-            <h2>Episodes: ${anime.nb_eps}</h2>
-            <h3>Score: ${anime.score}</h3>
-            <h3>Genres: ${anime.genres}</h3>
+            <h1>${truetitle}</h1>
+            <p>${data.synopsis}</p>
         </div>
     </div>
     <br>
     <div class="anime-episodes">
+        <div class="regular">
+            <h2>Regular</h2>
+            <hr>
+        </div>
+        <div class="special">
+            <h2>Special</h2>
+            <hr>
+        </div>
     </div>
     </div>
     </body>
     <script>
-    var episodes = ${JSON.stringify(information.eps)};
-    var anime = ${JSON.stringify(anime)};
-    var information = ${JSON.stringify(information)};
+    var episodes = ${JSON.stringify(data.episodes)};
+    var specials = ${JSON.stringify(data.specials)};
+    var title = "${req.params.title}";  
     </script>
     <script src="../../js/episodeManager.js">
     </script>
@@ -87,15 +110,44 @@ app.get("/anime/:title", async (req, res) => {
     `);
 });
 
-app.get("/watch", async (req, res) => {
-	const id = req.query.id;
-	const index = req.query.index;
-	const data = await api.loadAnimeVF();
-	let animeraw = data.filter((item) => item.id == id);
-	let anime = animeraw[0];
-	let information = await api.getMoreInformation(anime.url);
-	let embed = await api.getEmbed(information.eps[index].url);
-	res.send(`
+app.get("/view/:title", async (req, res) => {
+	res.redirect("../../view/" + req.params.title);
+});
+
+app.get("/view/:title/:id", async (req, res) => {
+	try {
+		console.log(`xxxxxxxxxxxxx ${req.params.id}`);
+		let video = await scraper.getVideo(req.params.id);
+		let data = await scraper.get(req.params.title);
+		let image = await scraper.getImage(req.params.title);
+		let episode = {
+			number: null,
+			index: null,
+			prev: null,
+			next: null,
+			title: null,
+			subtitle: null,
+		};
+		data.episodes.forEach((item) => {
+			if (+item.id != +req.params.id) return;
+			console.log("sugma");
+			episode.number = data.episodes.indexOf(item) + 1;
+			episode.index = data.episodes.indexOf(item);
+			if (item.index == 0) {
+				episode.prev = null;
+			} else {
+				episode.prev = data.episodes[item.index - 1];
+			}
+			if (item.index == data.episodes.length) {
+				episode.next = null;
+			} else {
+				episode.next = data.episodes[episode.index + 1];
+			}
+			episode.title = item.title;
+			episode.subtitle = item.subtitle;
+			console.log(item.subtitle);
+		});
+		res.send(`
     <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
@@ -105,22 +157,22 @@ app.get("/watch", async (req, res) => {
 			rel="stylesheet"
 			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
 		/>
-		<link rel="stylesheet" href="../../css/global.css" />
-		<link rel="stylesheet" href="../../css/header.css" />
+		<link rel="stylesheet" href="../../../css/global.css" />
+		<link rel="stylesheet" href="../../../css/header.css" />
 		<link
 			rel="shortcut icon"
 			href="https://hub.koneko.link/cdn/icons/blue.png"
 			type="image/x-icon"
 		/>
-		<title>${anime.title} | Episode : ${+index + 1} | neko watch ^-^</title>
+		<title>${episode.title} | neko watch ^-^</title>
 	</head>
     <body>
     <div class="header">
-    <a href="../../" class="logo"
+    <a href="../../../" class="logo"
         >NekoWatch<span style="color: dodgerblue">;</span></a
     >
     <div class="header-right">
-        <a href="../../" class="track">
+        <a href="../../../" class="track">
             Home
         </a>
         <a href="http://track.koneko.link" class="track">Tracker</a>
@@ -129,27 +181,61 @@ app.get("/watch", async (req, res) => {
     <div class="content">
     <div class="anime-info">
         <div class="anime-info-left">
-            <img src="${anime.url_image}" alt="${anime.title}" />
+        <img referrerpolicy="no-referrer" src="https://animedao.to${image}" style="height:120px; width:90px;"/>
         </div>
         <div class="anime-info-right">
-            <h1>${anime.title}</h1>
-            <h2>Currently watching episode: ${+index + 1}</h2>
+            <h1>${episode.title}</h1>
+            <h3>${episode.subtitle}</h3>
         </div>
     </div>
-    <div class="episode-container" id="ep-cont">
+    <div class="episode-container" id="ep-cont" style="text-align:center">
     </div>
-    </div>
+    <div class="episode-controls" style="text-align:center">
+	</div>
+	<br><br><br>
     </body>
     <script>
-    var embed = ${JSON.stringify(embed)}
-    var container = document.getElementById("ep-cont")
-    var iframe = document.createElement("iframe")
-    iframe.src = embed[0]
-    iframe.style = "width: 900px;height:500px;"
-    container.appendChild(iframe)
+    var link = "${video.source}";
+    var episode = ${JSON.stringify(episode)}
     </script>
+    <script src="../../../js/videoManager.js"></script>
     </html>
     `);
+	} catch (e) {
+		console.log(`error:  ${e.message}`);
+	}
 });
+//scrolling="no" frameborder="0" width="700" height="430" allowfullscreen="true" webkitallowfullscreen="true" mozallowfullscreen="true"
 
 app.listen(port, () => console.log(`Listening on port ${port}`));
+
+function toUpper(str) {
+	return str
+		.toLowerCase()
+		.split(" ")
+		.map(function (word) {
+			return word[0].toUpperCase() + word.substr(1);
+		})
+		.join(" ");
+}
+
+function getEpisode(array, filterid) {
+	data.episodes.forEach((item) => {
+		if (item.id != req.params.id) return;
+		episode.number = array.indexOf(item) + 1;
+		episode.index = array.indexOf(item);
+		if (item.index == 0) {
+			episode.prev = null;
+		} else {
+			episode.prev = array[item.index - 1];
+		}
+		if (item.index == array.length) {
+			episode.next = null;
+		} else {
+			episode.next = array[episode.index + 1];
+		}
+		episode.title = item.title;
+		episode.subtitle = item.subtitle;
+		return episode;
+	});
+}

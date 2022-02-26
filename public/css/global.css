@@ -75,19 +75,46 @@ button {
 }
 
 .anime-episodes {
+	display: grid;
+	grid-template-columns: 60% 40%;
+}
+
+.regular {
 	display: flex;
 	flex-direction: column;
 	gap: 10px;
 }
 
-.anime-episodes > div {
+.regular > div {
 	border: 2px black solid;
 	padding: 10px;
 	height: 100px;
 	width: 400px;
 }
 
-.anime-episodes > div:hover {
+.regular > div:hover {
 	background-color: rgb(255, 255, 46);
 	cursor: pointer;
+}
+
+.special {
+	display: flex;
+	flex-direction: column;
+	gap: 10px;
+}
+
+.special > div {
+	border: 2px black solid;
+	padding: 10px;
+	height: 100px;
+	width: 400px;
+}
+
+.special > div:hover {
+	background-color: rgb(255, 255, 46);
+	cursor: pointer;
+}
+
+hr {
+	width: 100%;
 }
