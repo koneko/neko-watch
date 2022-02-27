@@ -136,7 +136,7 @@ app.get("/view/:title/:id", async (req, res) => {
 			if (item.index == 0) {
 				episode.prev = null;
 			} else {
-				episode.prev = data.episodes[item.index - 1];
+				episode.prev = data.episodes[episode.index - 1];
 			}
 			if (item.index == data.episodes.length) {
 				episode.next = null;
@@ -147,16 +147,17 @@ app.get("/view/:title/:id", async (req, res) => {
 			episode.subtitle = item.subtitle;
 			console.log(item.subtitle);
 		});
+		console.log(episode);
 		res.send(`
     <html lang="en">
 	<head>
 		<meta charset="UTF-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link
-			rel="stylesheet"
-			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
-		/>
+		<script
+			src="https://kit.fontawesome.com/11fc85fa63.js"
+			crossorigin="anonymous"
+		></script>
 		<link rel="stylesheet" href="../../../css/global.css" />
 		<link rel="stylesheet" href="../../../css/header.css" />
 		<link
@@ -178,6 +179,7 @@ app.get("/view/:title/:id", async (req, res) => {
         <a href="http://track.koneko.link" class="track">Tracker</a>
     </div>
     </div>
+	<br>
     <div class="content">
     <div class="anime-info">
         <div class="anime-info-left">
@@ -190,13 +192,14 @@ app.get("/view/:title/:id", async (req, res) => {
     </div>
     <div class="episode-container" id="ep-cont" style="text-align:center">
     </div>
+	<br>
     <div class="episode-controls" style="text-align:center">
 	</div>
-	<br><br><br>
     </body>
     <script>
     var link = "${video.source}";
     var episode = ${JSON.stringify(episode)}
+	var title = "${req.params.title}";
     </script>
     <script src="../../../js/videoManager.js"></script>
     </html>

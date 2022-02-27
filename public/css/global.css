@@ -115,6 +115,25 @@ button {
 	cursor: pointer;
 }
 
+.episode-controls {
+	display: flex;
+	gap: 10px;
+	flex-direction: row;
+	justify-content: center;
+	align-items: center;
+}
+
+.episode-controls > a {
+	border: 1px dodgerblue solid;
+	background-color: dodgerblue;
+	padding: 10px;
+	padding-left: 15px;
+	padding-right: 15px;
+	font-size: 17px;
+	border-radius: 5px;
+	color: white;
+}
+
 hr {
 	width: 100%;
 }
