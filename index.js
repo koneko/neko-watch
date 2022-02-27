@@ -79,7 +79,7 @@ app.get("/anime/:title", async (req, res) => {
     <div class="content">
     <div class="anime-info">
         <div class="anime-info-left">
-            <img referrerpolicy="no-referrer" src="https://animedao.to${image}" style="height:450px;"/>
+            <img referrerpolicy="no-referrer" src="https://animedao.to${image}" style="height:470px;"/>
         </div>
         <div class="anime-info-right">
             <h1>${truetitle}</h1>
@@ -146,6 +146,26 @@ app.get("/view/:title/:id", async (req, res) => {
 			episode.subtitle = item.subtitle;
 			console.log(item.subtitle);
 		});
+		if (episode.number == null) {
+			data.specials.forEach((item) => {
+				if (+item.id != +req.params.id) return;
+				episode.number = data.specials.indexOf(item) + 1;
+				episode.index = data.specials.indexOf(item);
+				if (item.index == 0) {
+					episode.prev = null;
+				} else {
+					episode.prev = data.specials[episode.index - 1];
+				}
+				if (item.index == data.specials.length) {
+					episode.next = null;
+				} else {
+					episode.next = data.specials[episode.index + 1];
+				}
+				episode.title = item.title;
+				episode.subtitle = item.subtitle;
+				console.log(item.subtitle);
+			});
+		}
 		res.send(`
     <html lang="en">
 	<head>

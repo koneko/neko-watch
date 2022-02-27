@@ -1,6 +1,7 @@
 var container = document.getElementById("ep-cont");
-container.innerHTML = `<iframe src='${link}' scrolling='no' frameborder='0' width='750px;' height='422px;' allowfullscreen='true' webkitallowfullscreen='true' mozallowfullscreen='true'></iframe>`;
+container.innerHTML = `<iframe src='${link}' scrolling='no' frameborder='0' width='770px;' height='442px;' allowfullscreen='true' webkitallowfullscreen='true' mozallowfullscreen='true'></iframe>`;
 let controls = document.querySelector(".episode-controls");
+
 if (episode.prev != null) {
 	let a = document.createElement("a");
 	a.innerHTML = `<i class="fa-solid fa-arrow-left"></i>`;
