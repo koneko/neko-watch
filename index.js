@@ -130,7 +130,6 @@ app.get("/view/:title/:id", async (req, res) => {
 		};
 		data.episodes.forEach((item) => {
 			if (+item.id != +req.params.id) return;
-			console.log("sugma");
 			episode.number = data.episodes.indexOf(item) + 1;
 			episode.index = data.episodes.indexOf(item);
 			if (item.index == 0) {
@@ -147,7 +146,6 @@ app.get("/view/:title/:id", async (req, res) => {
 			episode.subtitle = item.subtitle;
 			console.log(item.subtitle);
 		});
-		console.log(episode);
 		res.send(`
     <html lang="en">
 	<head>
