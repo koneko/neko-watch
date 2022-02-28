@@ -1,6 +1,6 @@
 # neko-watch
 
-anime watching application, that scrapes from (https://animedao.to)[https://animedao.to] <br>
+anime watching application, that scrapes from [https://animedao.to](https://animedao.to) <br>
 doesnt do that much other than that it can
 
 ## features
@@ -17,4 +17,4 @@ doesnt do that much other than that it can
 
 ### setup
 
-alright, so for setup, pretty simple \*\*just download from the (releases)[https://github.com] tab and follow the instructions there
+alright, so for setup, pretty simple \*\*just download from the [releases](https://github.com/koneko/neko-watch/releases) tab and follow the instructions there
