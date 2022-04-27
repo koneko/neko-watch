@@ -5,6 +5,13 @@ async function search(query) {
 	let results = [];
 	let options = {
 		uri: `https://animedao.to/search/?search=${query}`,
+		  headers: {
+    		// User agent, Cache Control and Accept headers are required
+    		// User agent is populated by a random UA.
+    		'User-Agent': 'Ubuntu Chromium/34.0.1847.116 Chrome/34.0.1847.116 Safari/537.36',
+    		'Cache-Control': 'private',
+    		'Accept': 'application/xml,application/xhtml+xml,text/html;q=0.9, text/plain;q=0.8,image/png,*/*;q=0.5'
+  		},
 	};
 	let raw = await cloudscraper.get(options);
 	let rawdata = await parse(raw);
@@ -40,6 +47,13 @@ async function search(query) {
 async function getImage(title) {
 	let options = {
 		uri: `https://animedao.to/anime/${title}`,
+		headers: {
+    		// User agent, Cache Control and Accept headers are required
+    		// User agent is populated by a random UA.
+    		'User-Agent': 'Ubuntu Chromium/34.0.1847.116 Chrome/34.0.1847.116 Safari/537.36',
+    		'Cache-Control': 'private',
+    		'Accept': 'application/xml,application/xhtml+xml,text/html;q=0.9, text/plain;q=0.8,image/png,*/*;q=0.5'
+  		},
 	};
 	let raw = await cloudscraper.get(options);
 	let rawdata = await parse(raw);
@@ -56,6 +70,13 @@ async function newEpisodes() {
 	let results = [];
 	let options = {
 		uri: `https://animedao.to/`,
+		headers: {
+    		// User agent, Cache Control and Accept headers are required
+    		// User agent is populated by a random UA.
+    		'User-Agent': 'Ubuntu Chromium/34.0.1847.116 Chrome/34.0.1847.116 Safari/537.36',
+    		'Cache-Control': 'private',
+    		'Accept': 'application/xml,application/xhtml+xml,text/html;q=0.9, text/plain;q=0.8,image/png,*/*;q=0.5'
+  		},
 	};
 	let raw = await cloudscraper.get(options);
 	let rawdata = await parse(raw);
@@ -99,6 +120,13 @@ async function newEpisodes() {
 async function get(rawtitle) {
 	let options = {
 		uri: `https://animedao.to/anime/${rawtitle}`,
+		headers: {
+    		// User agent, Cache Control and Accept headers are required
+    		// User agent is populated by a random UA.
+    		'User-Agent': 'Ubuntu Chromium/34.0.1847.116 Chrome/34.0.1847.116 Safari/537.36',
+    		'Cache-Control': 'private',
+    		'Accept': 'application/xml,application/xhtml+xml,text/html;q=0.9, text/plain;q=0.8,image/png,*/*;q=0.5'
+  		},
 	};
 	let raw = await cloudscraper.get(options);
 	let rawdata = await parse(raw);
@@ -166,6 +194,13 @@ async function get(rawtitle) {
 async function getVideo(videoid) {
 	let options = {
 		uri: `https://animedao.to/view/${videoid}`,
+		headers: {
+    		// User agent, Cache Control and Accept headers are required
+    		// User agent is populated by a random UA.
+    		'User-Agent': 'Ubuntu Chromium/34.0.1847.116 Chrome/34.0.1847.116 Safari/537.36',
+    		'Cache-Control': 'private',
+    		'Accept': 'application/xml,application/xhtml+xml,text/html;q=0.9, text/plain;q=0.8,image/png,*/*;q=0.5'
+  		},
 	};
 	let raw = await cloudscraper.get(options);
 	let rawdata = await parse(raw);
