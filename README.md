@@ -1,5 +1,5 @@
 # neko-watch
-
+# uh oh, stinky, bad repo! this repo is stinky bad poopoo, and does not work on linux, go to [this repository right here](https://github.com/koneko/nekowatch), its also called nekowatch (no -) because he he he ha
 anime watching application, that scrapes from [https://animedao.to](https://animedao.to) <br>
 doesnt do that much other than that it can
 
